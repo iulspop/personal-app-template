@@ -1,5 +1,6 @@
 import {
   data,
+  Form,
   isRouteErrorResponse,
   Links,
   Meta,
@@ -11,13 +12,22 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+import { Button } from "./components/ui/button";
+import {
+  authMiddleware,
+  getUserIdFromContext,
+} from "./features/auth/application/auth-middleware.server";
 import { ClientHintCheck, getHints } from "./utils/client-hints";
 
-export async function loader({ request }: Route.LoaderArgs) {
+export const middleware = [authMiddleware];
+
+export async function loader({ context, request }: Route.LoaderArgs) {
+  const userId = getUserIdFromContext(context);
   return data({
     requestInfo: {
       hints: getHints(request),
     },
+    userId,
   });
 }
 
@@ -40,8 +50,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function App({ loaderData }: Route.ComponentProps) {
+  return (
+    <>
+      {loaderData.userId && (
+        <header className="flex items-center justify-end p-4">
+          <Form action="/logout" method="post">
+            <Button size="sm" type="submit" variant="ghost">
+              Log out
+            </Button>
+          </Form>
+        </header>
+      )}
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

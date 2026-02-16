@@ -8,8 +8,10 @@ const adapter = new PrismaBetterSqlite3({
 const prisma = new PrismaClient({ adapter });
 
 async function seed() {
-  await prisma.todo.create({
-    data: { description: "Get started", title: "First todo" },
+  await prisma.user.upsert({
+    create: { email: "test@example.com", name: "Test User" },
+    update: {},
+    where: { email: "test@example.com" },
   });
 
   console.log("Database has been seeded.");
