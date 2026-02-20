@@ -9,7 +9,7 @@ See `personal-app-template-with-demo` for a working reference implementation.
 ## Getting Started
 
 ```bash
-cp -r personal-app-template my-app
+npx create-react-router@latest --template iulspop/personal-app-template
 cd my-app
 pnpm install
 cp .env.example .env
